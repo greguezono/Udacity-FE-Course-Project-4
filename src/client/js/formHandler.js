@@ -18,7 +18,7 @@ async function postData(data) {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({'data': data})
+        body: JSON.stringify({'data': escape(data)})
     });
 }
 
@@ -33,8 +33,22 @@ async function updateUi() {
 
     try {
         let data = await res.json()
-        console.log("Data: " + JSON.stringify(data))
+        let text = getAnalysis(data)
+        document.getElementById('results').innerHTML = text
+        console.log("text: " + text)
     } catch (error) {
         console.log(error);
     }
+}
+
+function getAnalysis(data) {
+    let confidence
+    
+    if (parseInt(data.confidence, 10) > 50) {
+        confidence = 'confident'
+    } else {
+        confidence = 'unsure'
+    }
+    return `This quote is a ${data.subjectivity} and ${data.irony} quote. 
+    Overall, the author seems ${confidence} about what he is portraying.`
 }

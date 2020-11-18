@@ -32,7 +32,7 @@ app.get('/test', function (req, res) {
 
 var userData = {}
 
-app.post('/reqApi', function (req, res) {
+app.post('/reqApi', async function (req, res) {
     var data = req.body.data
     var https = require('follow-redirects').https;
     var fs = require('fs');
@@ -56,6 +56,7 @@ app.post('/reqApi', function (req, res) {
         res.on("end", function (chunk) {
         var body = Buffer.concat(chunks);
         userData = body.toString()
+        console.log(userData)
         return body;
         });
 

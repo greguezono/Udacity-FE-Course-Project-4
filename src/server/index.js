@@ -1,11 +1,12 @@
 const dotenv = require('dotenv');
 dotenv.config();
-var path = require('path')
+const path = require('path')
 const express = require('express')
 const mockAPIResponse = require('./mockAPI.js')
-var bodyParser = require('body-parser');
+const bodyParser = require('body-parser');
+const fetch = require("node-fetch")
 // API documentation = https://www.meaningcloud.com/developer/sentiment-analysis/doc
-var apiKey = process.env.API_KEY;
+const apiKey = process.env.API_KEY;
 
 const app = express()
 
@@ -30,48 +31,18 @@ app.get('/test', function (req, res) {
     res.send(mockAPIResponse)
 })
 
-var userData = {}
-
 app.post('/reqApi', async function (req, res) {
-    var data = req.body.data
-    var https = require('follow-redirects').https;
-    var fs = require('fs');
-
-    var options = {
-    'method': 'POST',
-    'hostname': 'api.meaningcloud.com',
-    'path': getPath(apiKey, data),
-    'headers': {
-    },
-    'maxRedirects': 20
-    };
-
-    var req = https.request(options, function (res) {
-        var chunks = [];
-
-        res.on("data", function (chunk) {
-        chunks.push(chunk);
-        });
-
-        res.on("end", function (chunk) {
-        var body = Buffer.concat(chunks);
-        userData = body.toString()
-        console.log(userData)
-        return body;
-        });
-
-        res.on("error", function (error) {
-        console.error(error);
-        });
-    });
-
-    req.end();
+    let data = req.body.data
+    let path = getPath(apiKey, data)
+    let apiRes = await fetch(path)
+    try {
+        let userData = await apiRes.json()
+        res.send(JSON.stringify(userData))
+    } catch (error) {
+        console.log(error)
+    }
 })
 
 function getPath(key, text) {
-    return `/sentiment-2.1?key=${key}&lang=en&txt=${text}&model=general`
+    return `http://api.meaningcloud.com/sentiment-2.1?key=${key}&lang=en&txt=${text}&model=general`
 }
-
-app.get('/getUserData', function(req, res) {
-    res.send(userData)
-})

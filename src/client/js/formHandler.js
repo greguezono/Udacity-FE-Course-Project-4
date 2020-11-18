@@ -6,7 +6,9 @@ function handleSubmit(event) {
     Client.validateForm(formText)
 
     console.log("::: Form Submitted :::")
-    postData(formText).then(updateUi())
+    postData(formText).then( function (userData) {
+        updateUi(userData)
+    })
 }
 
 export { handleSubmit }
@@ -20,25 +22,18 @@ async function postData(data) {
         },
         body: JSON.stringify({'data': escape(data)})
     });
-}
-
-async function updateUi() {
-    let res = await fetch('/getUserData', {
-        method: 'GET',
-        credentials: 'same-origin',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-    });
 
     try {
-        let data = await res.json()
-        let text = getAnalysis(data)
-        document.getElementById('results').innerHTML = text
-        console.log("text: " + text)
+        let resData = res.json()
+        return resData
     } catch (error) {
-        console.log(error);
+        console.log(error)
     }
+}
+
+async function updateUi(userData) {
+    let text = getAnalysis(userData)
+    document.getElementById('results').innerHTML = text
 }
 
 function getAnalysis(data) {
@@ -49,6 +44,5 @@ function getAnalysis(data) {
     } else {
         confidence = 'unsure'
     }
-    return `This quote is a ${data.subjectivity} and ${data.irony} quote. 
-    Overall, the author seems ${confidence} about what he is portraying.`
+    return `This quote is a ${data.irony} and ${data.subjectivity} quote. Overall, the author seems ${confidence} about what he is conveying.`
 }

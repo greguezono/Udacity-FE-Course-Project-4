@@ -7,6 +7,7 @@ function handleSubmit(event) {
     try{
         Client.validateForm(formQuote, formAuthor)
     } catch (error) {
+        alert("Please fill in the forms below")
         return
     }
     
@@ -16,8 +17,6 @@ function handleSubmit(event) {
         updateUi(userData)
     })
 }
-
-export { handleSubmit }
 
 async function postData(data) {
     let res = await fetch('/reqApi', {
@@ -38,20 +37,27 @@ async function postData(data) {
 }
 
 async function updateUi(userData) {
+    let author = document.getElementById('author').value
+    userData['author'] = author
     let text = getAnalysis(userData)
     document.getElementById('results').innerHTML = text
 }
 
 function getAnalysis(data) {
-    let formAuthor = document.getElementById('author').value
     let confidence
+    if (data == null) {
+        return 
+    }
     if (parseInt(data.confidence, 10) > 50) {
         confidence = 'confident'
     } else {
         confidence = 'unsure'
     }
-    var text = `Interesting quote by ${formAuthor}! <br>
+    var text = `Interesting quote by ${data.author}! <br>
     This quote is a ${data.irony} and ${data.subjectivity} quote. <br>
     Overall, the author seems ${confidence} about what he is conveying.`
     return text
 }
+
+export { handleSubmit }
+export { getAnalysis }

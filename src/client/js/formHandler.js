@@ -19,16 +19,15 @@ function handleSubmit(event) {
 }
 
 async function postData(data) {
-    let res = await fetch('/reqApi', {
-        method: 'POST',
-        credentials: 'same-origin',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({'data': escape(data)})
-    });
-
     try {
+        let res = await fetch('/reqApi', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({'data': escape(data)})
+        });
         let resData = res.json()
         return resData
     } catch (error) {

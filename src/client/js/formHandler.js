@@ -20,7 +20,7 @@ function handleSubmit(event) {
 
 async function postData(data) {
     try {
-        let res = await fetch('/reqApi', {
+        let res = await fetch('http://localhost:8081/reqApi', {
             method: 'POST',
             credentials: 'same-origin',
             headers: {
